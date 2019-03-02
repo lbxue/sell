@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<configuration>
+
+    <appender name="consoleLog" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>
+                %msg%n
+            </pattern>
+        </layout>
+    </appender>
+
+    <!-- infoLog单独每天输出一个文件 -->
+    <appender name="infoLogFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 根据范围过滤不同级别的日志 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <!-- 默认日志级别为INFO -->
+            <level>ERROR</level>
+            <onMatch>DENY</onMatch><!-- 匹配到ERROR级别的日志，禁止打印 -->
+            <onMismatch>ACCEPT</onMismatch><!-- 没匹配到ERROR级别的日志，接受打印，即Info上的Waring级别日子会打印 -->
+        </filter>
+        <encoder>
+            <pattern>
+                %msg%n
+            </pattern>
+        </encoder>
+        <!-- 滚动策略 -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--路径-->
+            <fileNamePattern>/var/log/tomcat/info.%d.log</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <!-- errorLog单独每天一个输出文件 -->
+    <appender name="errorFileLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 过滤器过滤出级别大于等于ERROR的打印输出 -->
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <encoder>
+            <pattern>
+                %d - %msg%n
+            </pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/var/log/tomcat/error.%d.log</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="consoleLog"/>
+        <appender-ref ref="infoLogFile"/>
+        <appender-ref ref="errorFileLog"/>
+    </root>
+
+</configuration>
